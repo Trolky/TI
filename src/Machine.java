@@ -1,4 +1,11 @@
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 public class Machine {
 	private static final String initialState = "a";
     private static final Set<String> acceptingStates = new HashSet<>(List.of("e", "f", "g"));
@@ -27,24 +34,24 @@ public class Machine {
 	     this.historyStack = new Stack<>();
     }
 	
-	 public boolean performTransition(String inputSymbol) {
+	 public boolean performTransition(String inputSymbol) throws BadLocationException {
 	        if (transitions.containsKey(currentState) && transitions.get(currentState).containsKey(inputSymbol)) {
 	            String newState = transitions.get(currentState).get(inputSymbol);
 	            historyStack.push(currentState);
 	            currentState = newState;
 	            return true;
 	        } else {
-	            System.out.println("Chyba: Přechod pro symbol " + inputSymbol + " není definován ze stavu " + currentState + ".");
+				printError(1,inputSymbol);
 	            return false;
 	        }
 	    }
 	 
-	    public boolean stepBack() {
+	    public boolean stepBack() throws BadLocationException {
 	        if (!historyStack.isEmpty()) {
 	        	currentState = historyStack.pop();
 	            return true;
 	        } else {
-	            System.out.println("Chyba: Nelze provést krok zpět, historie přechodů je prázdná.");
+				printError(2,null);
 	            return false;
 	        }
 	    }
@@ -65,7 +72,22 @@ public class Machine {
 	    public List<String> getHistoryStack() {
 	    	 return new ArrayList<>(historyStack);
 	    }
-	
+
+		public void printError(int text, String inputSymbol) throws BadLocationException {
+			SimpleAttributeSet attributeSet = new SimpleAttributeSet();
+
+			StyleConstants.setForeground(attributeSet, Color.RED);
+
+			StyleConstants.setBold(attributeSet, true);
+			switch (text){
+				case 1:
+					Main.appendText("\n"+"Chyba: Přechod pro symbol " + inputSymbol + " není definován ze stavu " + currentState + ".",attributeSet);
+					break;
+				case 2:
+					Main.appendText("\n"+"Chyba: Nelze provést krok zpět, historie přechodů je prázdná.",attributeSet);
+					break;
+			}
+		}
 	
 	
 }

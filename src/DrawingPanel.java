@@ -25,7 +25,10 @@ public class DrawingPanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2 = (Graphics2D)g;
-        g2.drawImage(img,0,0,img.getWidth(),img.getHeight(),null);
+        Image resImage = img.getScaledInstance(950,650,Image.SCALE_SMOOTH);
+        BufferedImage scaledImage = new BufferedImage(950,650,img.getType());
+        scaledImage.getGraphics().drawImage(resImage,0,0,null);
+        g2.drawImage(scaledImage,0,0,null);
     }
 
     public BufferedImage getImg() {
